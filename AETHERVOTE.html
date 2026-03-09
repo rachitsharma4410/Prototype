@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AetherVote - Election Commission of India</title>
+    <style>
+        :root {
+            --eci-blue: #003366;
+            --eci-saffron: #FF9933;
+            --eci-green: #138808;
+            --bg-light: #f4f6f9;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #cbd5e1;
+            --evm-button: #2563eb;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            height: 100vh;
+            overflow-y: auto;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        
+        /* Govt Top Bar */
+        .gov-top-bar {
+            background-color: #f1f1f1;
+            color: #333;
+            font-size: 12px;
+            padding: 4px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .gov-top-bar .left {
+            display: flex;
+            gap: 15px;
+        }
+
+        .gov-top-bar .right {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .accessibility-icons span {
+            display: inline-block;
+            padding: 2px 6px;
+            background: #fff;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            margin-left: 4px;
+            font-weight: bold;
+        }
+
+        /* ECI Header */
+        .eci-header {
+            background-color: #ffffff;
+            padding: 15px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 4px solid var(--eci-saffron);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .eci-logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .eci-seal {
+            width: 60px;
+            height: 60px;
+            background: var(--eci-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            border: 2px solid var(--eci-saffron);
+        }
+
+        .eci-title {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .eci-title-hi {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--eci-blue);
+        }
+
+        .eci-title-en {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-dark);
+            text-transform: uppercase;
+        }
+
+        .project-branding {
+            text-align: right;
+        }
+
+        .project-name {
+            font-size: 24px;
+            font-weight: 900;
+            color: var(--eci-blue);
+            letter-spacing: 1px;
+        }
+
+        .project-sub {
+            font-size: 12px;
+            color: var(--eci-green);
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        /* Main Container */
+        .evm-screen {
+            width: 100%;
+            max-width: 1100px;
+            background: #ffffff;
+            border-radius: 8px;
+            position: relative;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            margin: 30px auto;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+        
+        .status-bar {
+            background: var(--eci-blue);
+            padding: 10px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #ffffff;
+            font-size: 13px;
+        }
+        
+        .status-indicators {
+            display: flex;
+            gap: 20px;
+            font-weight: 600;
+        }
+        
+        .indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .indicator.active {
+            color: #4ade80; /* Light green */
+        }
+        
+        .content-container {
+            padding: 40px 40px;
+            min-height: 500px;
+        }
+        
+        /* Progress Steps */
+        .step-progress {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 50px;
+            position: relative;
+        }
+        
+        .step-progress::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 3px;
+            background: #e2e8f0;
+            z-index: 0;
+        }
+        
+        .step-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 50px;
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .step-item.active {
+            color: var(--eci-blue);
+        }
+        
+        .step-item.completed {
+            color: var(--eci-green);
+        }
+        
+        .step-circle {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 3px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            font-weight: 800;
+            font-size: 18px;
+            background: white;
+        }
+        
+        .step-item.active .step-circle {
+            border-color: var(--eci-blue);
+            background: var(--eci-blue);
+            color: #fff;
+            box-shadow: 0 0 0 5px rgba(0, 51, 102, 0.1);
+        }
+        
+        .step-item.completed .step-circle {
+            border-color: var(--eci-green);
+            background: var(--eci-green);
+            color: #fff;
+        }
+        
+        /* Scanner Section */
+        .scanner-section {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto 40px auto;
+        }
+        
+        .biometric-scanner {
+            width: 150px;
+            height: 150px;
+            border: 4px solid var(--border-color);
+            border-radius: 50%;
+            margin: 0 auto 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8fafc;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .biometric-scanner.ready {
+            border-color: var(--eci-blue);
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(0, 51, 102, 0.1);
+        }
+        
+        .biometric-scanner.scanning {
+            border-color: var(--eci-green);
+            animation: scanPulse 1.5s infinite;
+        }
+        
+        @keyframes scanPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(19, 136, 8, 0.4); }
+            50% { box-shadow: 0 0 0 25px rgba(19, 136, 8, 0); }
+        }
+        
+        .scanner-icon {
+            font-size: 64px;
+            color: var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .biometric-scanner.ready .scanner-icon {
+            color: var(--eci-blue);
+        }
+        
+        .biometric-scanner.scanning .scanner-icon {
+            color: var(--eci-green);
+        }
+        
+        /* Aadhaar Consent */
+        .consent-box {
+            background: #fff8f1;
+            border: 1px solid #fed7aa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: left;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 13px;
+            color: #475569;
+        }
+
+        .consent-box input[type="checkbox"] {
+            margin-top: 3px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .scanner-status {
+            margin-bottom: 20px;
+        }
+        
+        .status-main {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--eci-blue);
+            margin-bottom: 5px;
+        }
+        
+        .status-sub {
+            font-size: 15px;
+            color: var(--text-muted);
+        }
+        
+        .progress-section {
+            max-width: 500px;
+            margin: 20px auto;
+            display: none;
+        }
+        
+        .progress-section.visible {
+            display: block;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--eci-green);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+        
+        .evm-button {
+            background: var(--eci-blue);
+            color: #fff;
+            border: none;
+            padding: 16px 40px;
+            font-size: 18px;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0, 51, 102, 0.2);
+        }
+        
+        .evm-button:hover {
+            background: #002244;
+            transform: translateY(-1px);
+        }
+        
+        .evm-button:disabled {
+            background: var(--border-color);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        
+        /* Results & Details */
+        .results-section, .candidates-section {
+            display: none;
+        }
+        
+        .results-section.visible, .candidates-section.visible {
+            display: block;
+            animation: fadeIn 0.4s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .result-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 8px;
+            border-left: 5px solid var(--eci-green);
+        }
+        
+        .result-icon {
+            font-size: 32px;
+            color: var(--eci-green);
+            margin-right: 20px;
+        }
+        
+        .voter-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+        
+        .detail-card {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .detail-label {
+            font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 5px;
+        }
+        
+        .detail-value {
+            font-size: 16px; font-weight: 700; color: var(--text-dark);
+        }
+
+        .constituency-banner {
+            background: var(--eci-blue);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 4px solid var(--eci-saffron);
+        }
+
+        .constituency-info h2 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .routing-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        /* EVM Candidate Layout */
+        .evm-machine-panel {
+            background: #e2e8f0;
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid #94a3b8;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.1);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .candidate-row {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .cand-number {
+            font-size: 20px;
+            font-weight: 800;
+            width: 40px;
+            color: var(--text-muted);
+        }
+        
+        .cand-info {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            border-right: 2px solid #e2e8f0;
+            padding-right: 20px;
+        }
+
+        .cand-name-party {
+            flex: 1;
+        }
+
+        .cand-name-party h4 {
+            font-size: 18px;
+            color: var(--text-dark);
+            text-transform: uppercase;
+        }
+
+        .cand-name-party p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .cand-symbol {
+            font-size: 40px;
+            width: 60px;
+            text-align: center;
+        }
+
+        .cand-action {
+            width: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding-left: 20px;
+        }
+
+        .vote-blue-btn {
+            width: 45px;
+            height: 45px;
+            background: var(--evm-button);
+            border-radius: 50%;
+            border: 3px solid #1e3a8a;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2), inset 0 2px 4px rgba(255,255,255,0.3);
+            transition: all 0.1s;
+        }
+
+        .vote-blue-btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2), inset 0 4px 8px rgba(0,0,0,0.4);
+        }
+        
+        /* Modals */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(4px);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.3s;
+        }
+        
+        .modal-overlay.visible { opacity: 1; visibility: visible; }
+        
+        .modal-content {
+            background: #ffffff; border-radius: 12px; padding: 30px;
+            max-width: 500px; width: 90%; text-align: center;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            border-top: 6px solid var(--eci-blue);
+        }
+
+        /* Digital VVPAT */
+        .vvpat-container {
+            background: #000;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+            height: 200px;
+            border: 4px solid #333;
+        }
+
+        .vvpat-glass {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .vvpat-slip {
+            background: #fef08a; /* Yellowish paper */
+            width: 80%;
+            margin: 0 auto;
+            padding: 15px;
+            text-align: left;
+            font-family: 'Courier New', Courier, monospace;
+            color: #000;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            position: absolute;
+            left: 10%;
+            top: -200px;
+            transition: top 2s ease-in-out;
+            z-index: 1;
+        }
+
+        .vvpat-slip.printing {
+            top: 20px;
+        }
+
+        .vvpat-slip hr {
+            border: none;
+            border-top: 1px dashed #000;
+            margin: 10px 0;
+        }
+        
+        .modal-buttons { display: flex; gap: 15px; justify-content: center; margin-top: 20px;}
+        .confirm-btn { background: var(--eci-green); color: white; padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;}
+        .cancel-btn { background: #ef4444; color: white; padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;}
+
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Govt Top Bar -->
+    <div class="gov-top-bar">
+        <div class="left">
+            <span>GOVERNMENT OF INDIA</span>
+        </div>
+        <div class="right">
+            <span>Skip to main content</span>
+            <div class="accessibility-icons">
+                <span>A-</span><span>A</span><span>A+</span>
+            </div>
+            <span><i class="fa-solid fa-volume-high"></i> Screen Reader</span>
+            <span style="border-left: 1px solid #ccc; padding-left: 15px;">English | हिन्दी</span>
+        </div>
+    </div>
+
+    <!-- ECI Header -->
+    <div class="eci-header">
+        <div class="eci-logo-container">
+            <div class="eci-seal"><i class="fa-solid fa-landmark"></i></div>
+            <div class="eci-title">
+                <span class="eci-title-hi">भारत निर्वाचन आयोग</span>
+                <span class="eci-title-en">Election Commission of India</span>
+            </div>
+        </div>
+        <div class="project-branding">
+            <div class="project-name">AETHERVOTE</div>
+            <div class="project-sub">Digital Democracy Sandbox</div>
+        </div>
+    </div>
+
+    <div class="evm-screen">
+        <div class="status-bar">
+            <div><strong>NODE:</strong> DEL-42 | <strong>STATUS:</strong> SECURE</div>
+            <div class="status-indicators">
+                <div class="indicator active"><i class="fas fa-network-wired"></i> UIDAI L2 LINKED</div>
+                <div class="indicator active"><i class="fas fa-shield-halved"></i> ZKP ACTIVE</div>
+                <div class="indicator active"><i class="fas fa-lock"></i> E2E ENCRYPTION</div>
+            </div>
+        </div>
+
+        <div class="content-container">
+            <div class="step-progress">
+                <div class="step-item active" id="step-1">
+                    <div class="step-circle"><i class="fa-solid fa-fingerprint"></i></div>
+                    <span>IDENTITY (ZKP)</span>
+                </div>
+                <div class="step-item" id="step-2">
+                    <div class="step-circle"><i class="fa-solid fa-server"></i></div>
+                    <span>API SYNC</span>
+                </div>
+                <div class="step-item" id="step-3">
+                    <div class="step-circle"><i class="fa-solid fa-check-to-slot"></i></div>
+                    <span>CAST VOTE</span>
+                </div>
+            </div>
+
+            <!-- STEP 1: SCANNER -->
+            <div class="scanner-section" id="section-scanner">
+                <div class="status-main" id="status-main">Voter Authentication</div>
+                <div class="status-sub" id="status-sub" style="margin-bottom: 30px;">Aadhaar Biometric e-KYC Verification</div>
+
+                <div class="consent-box">
+                    <input type="checkbox" id="aadhaar-consent">
+                    <label for="aadhaar-consent">
+                        <strong>Consent under Aadhaar Act, 2016:</strong> I hereby consent to provide my Aadhaar Number, Biometric and/or One Time Pin (OTP) data for Aadhaar based authentication for the purpose of establishing my identity for the AetherVote electoral process. I understand my data will be verified using Zero-Knowledge Proofs (ZKP) and will not be stored on this device.
+                    </label>
+                </div>
+
+                <div class="biometric-scanner" id="biometric-scanner">
+                    <i class="fas fa-fingerprint scanner-icon"></i>
+                </div>
+                
+                <div class="progress-section" id="progress-section">
+                    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+                    <div class="progress-text" id="progress-text">Initializing Secure Channel...</div>
+                </div>
+
+                <button class="evm-button" id="scan-button" disabled>
+                    <span id="button-text">Start Biometric Scan</span>
+                    <span id="button-loading" style="display: none;"><i class="fas fa-spinner fa-spin"></i> Authenticating with UIDAI...</span>
+                </button>
+            </div>
+
+            <!-- STEP 2 & 3: RESULTS & VOTING -->
+            <div class="results-section" id="results-section">
+                <div class="result-header">
+                    <div class="result-icon"><i class="fas fa-circle-check"></i></div>
+                    <div>
+                        <h3 style="color: var(--eci-green); font-size: 20px;">Identity Verified Successfully</h3>
+                        <p style="font-size: 14px; color: var(--text-muted);">Liveness detection passed. Identity verified via zk-SNARK protocol without exposing Aadhaar parameters.</p>
+                    </div>
+                </div>
+
+                <div class="voter-details" id="voter-details">
+                    <!-- Populated via JS -->
+                </div>
+
+                <div class="constituency-banner" id="constituency-banner">
+                    <div class="constituency-info">
+                        <div style="font-size: 12px; font-weight: 700; color: #fed7aa; margin-bottom: 5px; text-transform: uppercase;">Mapped Constituency Ballot</div>
+                        <h2 id="constituency-display">Fetching...</h2>
+                    </div>
+                    <div class="routing-badge">
+                        <i class="fa-solid fa-satellite-dish"></i> Remote Voting Active
+                    </div>
+                </div>
+
+                <div class="candidates-section" id="candidates-section">
+                    <h3 style="text-align: center; font-size: 20px; color: var(--eci-blue); margin-bottom: 20px; text-transform: uppercase; font-weight: 800;">Ballot Unit</h3>
+                    
+                    <div class="evm-machine-panel" id="candidates-list">
+                        <!-- Populated via JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Final Confirmation / Digital VVPAT Modal -->
+    <div class="modal-overlay" id="vvpat-modal">
+        <div class="modal-content" style="border-top-color: var(--eci-green);">
+            <h2 style="font-size: 24px; color: var(--eci-blue); margin-bottom: 5px;">Vote Cast Successfully</h2>
+            <p style="font-size: 14px; color: var(--text-muted);">Please verify your Digital VVPAT slip below. Your vote is being encrypted.</p>
+            
+            <div class="vvpat-container">
+                <div class="vvpat-glass"></div>
+                <div class="vvpat-slip" id="vvpat-slip">
+                    <div style="text-align: center; font-size: 12px; margin-bottom: 10px;">ELECTION COMMISSION OF INDIA<br>DIGITAL VVPAT</div>
+                    <hr>
+                    <div style="font-size: 14px;">
+                        No: <span id="slip-sno"></span><br>
+                        Candidate: <span id="slip-name"></span><br>
+                        Symbol: <span id="slip-symbol"></span>
+                    </div>
+                    <hr>
+                    <div style="font-size: 10px; word-break: break-all;">
+                        Tx: <span id="slip-hash" style="color: #666;"></span><br>
+                        Status: E2E Encrypted
+                    </div>
+                </div>
+            </div>
+            
+            <p style="font-size: 13px; color: #10b981; font-weight: bold; margin-bottom: 20px;">
+                <i class="fa-solid fa-lock"></i> Paillier Homomorphic Encryption Applied
+            </p>
+            
+            <button class="evm-button" id="close-modal" style="width: 100%;">Acknowledge & Finish</button>
+        </div>
+    </div>
+
+    <script>
+        // Simulated Constituency Data
+        const constituencyData = {
+            'Varanasi (Uttar Pradesh)': {
+                candidates: [
+                    { sno: '01', name: 'Narendra Modi', party: 'Bharatiya Janata Party', symbol: '🪷' },
+                    { sno: '02', name: 'Ajay Rai', party: 'Indian National Congress', symbol: '✋' },
+                    { sno: '03', name: 'Ather Jamal Lari', party: 'Bahujan Samaj Party', symbol: '🐘' },
+                    { sno: '04', name: 'NOTA', party: 'None of the Above', symbol: '❌' }
+                ]
+            },
+            'Wayanad (Kerala)': {
+                candidates: [
+                    { sno: '01', name: 'Rahul Gandhi', party: 'Indian National Congress', symbol: '✋' },
+                    { sno: '02', name: 'Annie Raja', party: 'Communist Party of India', symbol: '🌾' },
+                    { sno: '03', name: 'K. Surendran', party: 'Bharatiya Janata Party', symbol: '🪷' },
+                    { sno: '04', name: 'NOTA', party: 'None of the Above', symbol: '❌' }
+                ]
+            }
+        };
+
+        const eligibleVoters = [
+            { id: 'UID-8492', name: 'Ravi Kumar', yob: 1985, constituency: 'Varanasi (Uttar Pradesh)' },
+            { id: 'UID-3310', name: 'Lakshmi Nair', yob: 1992, constituency: 'Wayanad (Kerala)' }
+        ];
+
+        let currentVoter = null;
+        let isProcessing = false;
+
+        // Elements
+        const consentCheckbox = document.getElementById('aadhaar-consent');
+        const scanBtn = document.getElementById('scan-button');
+        const scannerBox = document.getElementById('biometric-scanner');
+
+        // Consent Logic
+        consentCheckbox.addEventListener('change', (e) => {
+            if(e.target.checked) {
+                scanBtn.disabled = false;
+                scannerBox.classList.add('ready');
+            } else {
+                scanBtn.disabled = true;
+                scannerBox.classList.remove('ready');
+            }
+        });
+
+        scanBtn.addEventListener('click', startScan);
+        scannerBox.addEventListener('click', () => {
+            if(consentCheckbox.checked && !isProcessing) startScan();
+        });
+        
+        document.getElementById('close-modal').addEventListener('click', resetSystem);
+
+        async function startScan() {
+            if (isProcessing) return;
+            isProcessing = true;
+            
+            scannerBox.classList.remove('ready');
+            scannerBox.classList.add('scanning');
+            scanBtn.disabled = true;
+            document.getElementById('button-text').style.display = 'none';
+            document.getElementById('button-loading').style.display = 'inline';
+            document.getElementById('progress-section').classList.add('visible');
+
+            // Simulate the ZKP & Aadhaar API Flow
+            const steps = [
+                { p: 20, t: 'Connecting to UIDAI API...' },
+                { p: 40, t: 'Verifying Biometric Liveness...' },
+                { p: 60, t: 'Generating zk-SNARK Proof...' },
+                { p: 80, t: 'Fetching Electoral Roll Mapping...' },
+                { p: 100, t: 'Ballot Generation Complete.' }
+            ];
+
+            const progressFill = document.getElementById('progress-fill');
+            const progressText = document.getElementById('progress-text');
+            const statusSub = document.getElementById('status-sub');
+
+            for(let i=0; i<steps.length; i++) {
+                progressFill.style.width = steps[i].p + '%';
+                progressText.textContent = steps[i].t;
+                statusSub.textContent = steps[i].t;
+                await new Promise(r => setTimeout(r, 800));
+            }
+
+            processVerification();
+        }
+
+        function processVerification() {
+            // Select random voter
+            currentVoter = eligibleVoters[Math.floor(Math.random() * eligibleVoters.length)];
+            
+            // Hide Scanner Section
+            document.getElementById('section-scanner').style.display = 'none';
+            
+            // Update Steps
+            document.getElementById('step-1').className = 'step-item completed';
+            document.getElementById('step-2').className = 'step-item completed';
+            document.getElementById('step-3').className = 'step-item active';
+
+            // Populate ZKP Details
+            document.getElementById('voter-details').innerHTML = `
+                <div class="detail-card">
+                    <div class="detail-label">Voter Name</div>
+                    <div class="detail-value">${currentVoter.name}</div>
+                </div>
+                <div class="detail-card">
+                    <div class="detail-label">Masked Aadhaar (DID)</div>
+                    <div class="detail-value" style="color: var(--eci-blue);">XXXX-XXXX-${currentVoter.id.split('-')[1]}</div>
+                </div>
+                <div class="detail-card">
+                    <div class="detail-label">Verification Mode</div>
+                    <div class="detail-value">Biometric + ZKP</div>
+                </div>
+            `;
+
+            // Load Dynamic Candidates
+            document.getElementById('constituency-display').textContent = currentVoter.constituency;
+            
+            const list = document.getElementById('candidates-list');
+            list.innerHTML = '';
+            
+            const candidates = constituencyData[currentVoter.constituency].candidates;
+            candidates.forEach((cand, index) => {
+                const row = document.createElement('div');
+                row.className = 'candidate-row';
+                row.innerHTML = `
+                    <div class="cand-number">${cand.sno}</div>
+                    <div class="cand-info">
+                        <div class="cand-name-party">
+                            <h4>${cand.name}</h4>
+                            <p>${cand.party}</p>
+                        </div>
+                        <div class="cand-symbol">${cand.symbol}</div>
+                    </div>
+                    <div class="cand-action">
+                        <button class="vote-blue-btn" aria-label="Vote for ${cand.name}"></button>
+                    </div>
+                `;
+                
+                // Attach event strictly to the blue button, just like real EVM
+                const btn = row.querySelector('.vote-blue-btn');
+                btn.onclick = () => castVote(cand);
+                
+                list.appendChild(row);
+            });
+
+            document.getElementById('results-section').classList.add('visible');
+            document.getElementById('candidates-section').classList.add('visible');
+        }
+
+        function castVote(cand) {
+            // Disable all buttons immediately
+            const buttons = document.querySelectorAll('.vote-blue-btn');
+            buttons.forEach(b => b.disabled = true);
+            
+            // Play Beep Sound (Simulated visually here)
+            
+            // Set VVPAT Data
+            document.getElementById('slip-sno').textContent = cand.sno;
+            document.getElementById('slip-name').textContent = cand.name;
+            document.getElementById('slip-symbol').textContent = cand.symbol;
+            
+            const txHash = '0x' + Array.from({length: 40}, () => Math.floor(Math.random()*16).toString(16)).join('');
+            document.getElementById('slip-hash').textContent = txHash;
+            
+            // Show Modal and Animate Slip
+            const modal = document.getElementById('vvpat-modal');
+            const slip = document.getElementById('vvpat-slip');
+            
+            modal.classList.add('visible');
+            
+            // Start printing animation
+            setTimeout(() => {
+                slip.classList.add('printing');
+            }, 500);
+        }
+
+        function resetSystem() {
+            document.getElementById('vvpat-modal').classList.remove('visible');
+            
+            isProcessing = false;
+            currentVoter = null;
+            
+            // Reset UI
+            document.getElementById('section-scanner').style.display = 'block';
+            document.getElementById('results-section').classList.remove('visible');
+            document.getElementById('candidates-section').classList.remove('visible');
+            
+            document.getElementById('step-1').className = 'step-item active';
+            document.getElementById('step-2').className = 'step-item';
+            document.getElementById('step-3').className = 'step-item';
+            
+            // Reset Scanner
+            consentCheckbox.checked = false;
+            scannerBox.classList.remove('scanning', 'ready');
+            scanBtn.disabled = true;
+            document.getElementById('button-text').style.display = 'inline';
+            document.getElementById('button-loading').style.display = 'none';
+            document.getElementById('progress-section').classList.remove('visible');
+            document.getElementById('progress-fill').style.width = '0%';
+            document.getElementById('status-sub').textContent = 'Aadhaar Biometric e-KYC Verification';
+            
+            // Reset VVPAT
+            document.getElementById('vvpat-slip').classList.remove('printing');
+        }
+    </script>
+</body>
+</html>
